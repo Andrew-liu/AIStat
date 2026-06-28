@@ -39,7 +39,7 @@ extension CodexUsageReader {
             symbolName: "terminal.fill",
             accentName: "purple",
             status: .stale,
-            source: "Cached quota",
+            source: NSLocalizedString("source.cachedQuota", comment: ""),
             quotaWindows: windows,
             cost: .empty,
             isConfigured: true
@@ -77,7 +77,7 @@ extension CodexUsageReader {
             symbolName: "sparkles",
             accentName: "purple",
             status: .stale,
-            source: "Cached quota",
+            source: NSLocalizedString("source.cachedQuota", comment: ""),
             quotaWindows: windows,
             cost: .empty,
             isConfigured: true
@@ -127,7 +127,7 @@ final class CodexUsageReader {
         summary.isInstalled = codexExecutable != nil
         summary.isLoggedIn = codexAccessToken() != nil || codexExecutable != nil
         summary.quotaWindows = windows
-        summary.source = "Cached quota"
+        summary.source = NSLocalizedString("source.cachedQuota", comment: "")
         summary.fiveHour = windows.first { $0.name == "5h" }
         summary.weekly = windows.first { $0.name == "Week" }
         let firstWindow = windows.first
@@ -138,7 +138,7 @@ final class CodexUsageReader {
                 quotaWindows: claudeWindows,
                 cost: .empty,
                 isConfigured: true,
-                source: "Cached quota"
+                source: NSLocalizedString("source.cachedQuota", comment: "")
             )
         }
         return summary
@@ -213,7 +213,7 @@ final class CodexUsageReader {
             return (robustLogged, "Local session logs")
         }
         if let cached = readCachedCodexQuota(), !cached.isEmpty {
-            return (cached, "Cached quota")
+            return (cached, NSLocalizedString("source.cachedQuota", comment: ""))
         }
         return ([], "No quota detected")
     }
@@ -559,7 +559,7 @@ final class CodexUsageReader {
             return (windows, true, "Claude CLI /usage")
         }
         if let cached = readCachedClaudeQuota(), !cached.isEmpty {
-            return (cached, true, "Cached quota")
+            return (cached, true, NSLocalizedString("source.cachedQuota", comment: ""))
         }
         if claudeDesktopInstalled() {
             return ([], false, "Claude Desktop detected; quota requires Claude Code CLI or OAuth credentials")
@@ -659,7 +659,7 @@ final class CodexUsageReader {
 
     private nonisolated func readClaudeCostSummary() -> (summary: TokenCostSummary, configured: Bool, source: String) {
         let roots = claudeLogRoots()
-        guard !roots.isEmpty else { return (.empty, false, "Claude logs not found") }
+        guard !roots.isEmpty else { return (.empty, false, NSLocalizedString("source.claudeLogsNotFound", comment: "")) }
 
         let calendar = Calendar.current
         let now = Date()
@@ -669,7 +669,7 @@ final class CodexUsageReader {
         let files = UsageCostCacheStore.jsonlFiles(roots: roots, since: startMonth)
         let foundLogs = !files.isEmpty
         if let cached = UsageCostCacheStore.cached(provider: "claude", files: files, now: now) {
-            return (cached, foundLogs, foundLogs ? "Claude local logs" : "Claude logs not found")
+            return (cached, foundLogs, foundLogs ? NSLocalizedString("source.claudeLocalLogs", comment: "") : NSLocalizedString("source.claudeLogsNotFound", comment: ""))
         }
 
         var summary = TokenCostSummary.empty
@@ -697,7 +697,7 @@ final class CodexUsageReader {
         }
         summary.isEstimated = true
         UsageCostCacheStore.save(summary, provider: "claude", files: files, now: now)
-        return (summary, foundLogs, foundLogs ? "Claude local logs" : "Claude logs not found")
+        return (summary, foundLogs, foundLogs ? NSLocalizedString("source.claudeLocalLogs", comment: "") : NSLocalizedString("source.claudeLogsNotFound", comment: ""))
     }
 
     private nonisolated func claudeLogRoots() -> [URL] {

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SectionHeader: View {
-    let title: String
+    let title: LocalizedStringKey
     let subtitle: String
 
     var body: some View {
@@ -22,7 +22,7 @@ struct SectionHeader: View {
 }
 
 struct BackButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let action: () -> Void
 
     var body: some View {
@@ -140,6 +140,6 @@ struct ProcessListCard: View {
     let processes: [SystemProcessSummary]
 
     var body: some View {
-        InfoCard(title: title, rows: processes.isEmpty ? [("No data", "--")] : processes.map { ($0.name, $0.valueText) })
+        InfoCard(title: title, rows: processes.isEmpty ? [(NSLocalizedString("common.noData", comment: ""), "--")] : processes.map { ($0.name, $0.valueText) })
     }
 }

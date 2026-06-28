@@ -87,7 +87,16 @@ struct DiskStatsDetail: Sendable {
     nonisolated static let empty = DiskStatsDetail(volumes: [])
 }
 
+/// 电池充放电状态（语言无关，供 UI 判色与显示文本各自使用）。
+enum BatteryChargeState: String, Sendable {
+    case charging
+    case connected
+    case discharging
+    case unknown
+}
+
 struct BatteryStatsDetail: Sendable {
+    var chargeState: BatteryChargeState
     var stateText: String
     var timeRemainingText: String
     var healthPercent: Double?
@@ -101,7 +110,8 @@ struct BatteryStatsDetail: Sendable {
     var designChargeCapacityText: String
 
     nonisolated static let empty = BatteryStatsDetail(
-        stateText: "Unknown",
+        chargeState: .unknown,
+        stateText: "--",
         timeRemainingText: "--",
         healthPercent: nil,
         conditionText: "--",

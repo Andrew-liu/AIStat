@@ -29,13 +29,17 @@ final class BatteryStatsModule: @unchecked Sendable {
         let ioreg = runner.run("/usr/sbin/ioreg", arguments: ["-rn", "AppleSmartBattery"]) ?? ""
         let charging = boolField("IsCharging", in: ioreg) ?? power.localizedCaseInsensitiveContains("Charging: Yes")
         let external = boolField("ExternalConnected", in: ioreg) ?? power.localizedCaseInsensitiveContains("Connected: Yes")
+        let chargeState: BatteryChargeState
         let stateText: String
         if charging {
-            stateText = "Charging"
+            chargeState = .charging
+            stateText = NSLocalizedString("battery.charging", comment: "")
         } else if external {
-            stateText = "Connected"
+            chargeState = .connected
+            stateText = NSLocalizedString("battery.connected", comment: "")
         } else {
-            stateText = "Discharging"
+            chargeState = .discharging
+            stateText = NSLocalizedString("battery.discharging", comment: "")
         }
 
         let health = number(after: "Maximum Capacity:", in: power)
@@ -50,14 +54,15 @@ final class BatteryStatsModule: @unchecked Sendable {
         let timeRemaining = intField("TimeRemaining", in: ioreg)
 
         return BatteryStatsDetail(
+            chargeState: chargeState,
             stateText: percent.map { "\(stateText) · \(Int($0.rounded()))%" } ?? stateText,
             timeRemainingText: formatBatteryTime(minutes: timeRemaining, charging: charging),
             healthPercent: health,
             conditionText: text(after: "Condition:", in: power) ?? "--",
             cycleCountText: cycle.map { "\($0) of \(designCycle)" } ?? "--",
-            powerAdapterText: watts.map { "\($0) W" } ?? (external ? "Connected" : "Not connected"),
+            powerAdapterText: watts.map { "\($0) W" } ?? (external ? NSLocalizedString("battery.connected", comment: "") : NSLocalizedString("battery.notConnected", comment: "")),
             temperatureText: temperature,
-            timeOnACText: external ? "Connected" : "--",
+            timeOnACText: external ? NSLocalizedString("battery.connected", comment: "") : "--",
             remainingCapacityText: current.map { "\($0) mAh" } ?? "--",
             fullChargeCapacityText: full.map { "\($0) mAh" } ?? "--",
             designChargeCapacityText: design.map { "\($0) mAh" } ?? "--"
@@ -99,7 +104,7 @@ final class BatteryStatsModule: @unchecked Sendable {
     }
 
     private nonisolated func formatBatteryTime(minutes: Int?, charging: Bool) -> String {
-        guard let minutes, minutes > 0, minutes < 65_535 else { return charging ? "Calculating charge time" : "Calculating remaining" }
+        guard let minutes, minutes > 0, minutes < 65_535 else { return charging ? NSLocalizedString("battery.calculatingCharge", comment: "") : NSLocalizedString("battery.calculatingRemaining", comment: "") }
         let hours = minutes / 60
         let mins = minutes % 60
         if hours > 0 {

@@ -59,4 +59,38 @@ final class UsageModelTests: XCTestCase {
         // haiku 最便宜
         XCTAssertLessThan(UsagePricingTable.claude("claude-haiku").input, UsagePricingTable.claude("claude-sonnet-4").input)
     }
+
+    func testMostConstrainedWindowPicksHighestUsage() {
+        // 空列表返回 nil
+        XCTAssertNil(CodexUsageModel.mostConstrainedWindow(in: []))
+
+        // 无任何额度窗口返回 nil
+        let noWindows = ProviderUsage(
+            id: "codex", name: "Codex", symbolName: "terminal.fill", accentName: "purple",
+            status: .operational, source: "", quotaWindows: [], cost: .empty, isConfigured: true
+        )
+        XCTAssertNil(CodexUsageModel.mostConstrainedWindow(in: [noWindows]))
+
+        // 跨 Provider 选出已用最高的窗口
+        let codex = ProviderUsage(
+            id: "codex", name: "Codex", symbolName: "terminal.fill", accentName: "purple",
+            status: .operational, source: "",
+            quotaWindows: [
+                RateLimitWindow(id: "c1", name: "5h", usedPercent: 40, resetsAt: nil, durationMinutes: 300),
+                RateLimitWindow(id: "c2", name: "Week", usedPercent: 72, resetsAt: nil, durationMinutes: nil)
+            ],
+            cost: .empty, isConfigured: true
+        )
+        let claude = ProviderUsage(
+            id: "claude", name: "Claude", symbolName: "sparkles", accentName: "purple",
+            status: .operational, source: "",
+            quotaWindows: [
+                RateLimitWindow(id: "cl1", name: "Session", usedPercent: 88, resetsAt: nil, durationMinutes: nil)
+            ],
+            cost: .empty, isConfigured: true
+        )
+        let result = CodexUsageModel.mostConstrainedWindow(in: [codex, claude])
+        XCTAssertEqual(result?.providerName, "Claude")
+        XCTAssertEqual(result?.window.usedPercent ?? 0, 88, accuracy: 0.001)
+    }
 }

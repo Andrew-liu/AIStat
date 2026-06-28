@@ -8,10 +8,10 @@ struct ProviderUsageCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             header
-            sectionTitle("Cost")
+            sectionTitle("provider.cost")
             costSummary
             Divider()
-            sectionTitle("Quota")
+            sectionTitle("provider.quota")
             quotaSection
         }
         .padding(12)
@@ -36,8 +36,8 @@ struct ProviderUsageCard: View {
 
     private var costSummary: some View {
         HStack(spacing: 10) {
-            CostColumn(title: "Today", tokens: provider.todayTokensText, cost: provider.todayCostText)
-            CostColumn(title: "This Month", tokens: provider.monthTokensText, cost: provider.monthCostText)
+            CostColumn(title: "cost.today", tokens: provider.todayTokensText, cost: provider.todayCostText)
+            CostColumn(title: "cost.thisMonth", tokens: provider.monthTokensText, cost: provider.monthCostText)
         }
     }
 
@@ -54,7 +54,7 @@ struct ProviderUsageCard: View {
         }
     }
 
-    private func sectionTitle(_ title: String) -> some View {
+    private func sectionTitle(_ title: LocalizedStringKey) -> some View {
         Text(title)
             .font(.system(size: 10.5, weight: .semibold, design: .rounded))
             .foregroundStyle(.secondary)
@@ -63,7 +63,7 @@ struct ProviderUsageCard: View {
 }
 
 private struct CostColumn: View {
-    let title: String
+    let title: LocalizedStringKey
     let tokens: String
     let cost: String
 
@@ -101,12 +101,12 @@ private struct StatusBadge: View {
         .background(Capsule().fill(color.opacity(0.12)))
     }
 
-    private var title: String {
+    private var title: LocalizedStringKey {
         switch status {
-        case .operational: return "Connected"
-        case .stale: return "Available"
-        case .limited: return "Desktop only"
-        case .unavailable: return "Not configured"
+        case .operational: return "provider.status.connected"
+        case .stale: return "provider.status.available"
+        case .limited: return "provider.status.desktopOnly"
+        case .unavailable: return "provider.status.notConfigured"
         }
     }
 
@@ -158,7 +158,7 @@ private struct QuotaUnavailableRow: View {
             Image(systemName: "clock.badge.questionmark")
                 .foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 2) {
-                Text(provider.id == "codex" || provider.id == "claude" ? "Quota refreshing" : "Quota unavailable")
+                Text(provider.id == "codex" || provider.id == "claude" ? LocalizedStringKey("provider.quotaRefreshing") : LocalizedStringKey("provider.quotaUnavailable"))
                     .font(.system(size: 12.5, weight: .semibold))
                 Text(provider.authSource)
                     .font(.system(size: 10, weight: .medium))

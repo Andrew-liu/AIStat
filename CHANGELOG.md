@@ -6,10 +6,33 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-06-28
+
+### Added
+- 额度临界通知：当任一 Provider 的额度窗口已用百分比达到设定阈值（70% / 80% / 90% / 95%，可在设置中选择或关闭）时，发送系统通知。同一额度窗口的同一重置周期、同一阈值档只提醒一次（去重），避免重复打扰。
+- 菜单栏用量显示：用量紧张（最紧张额度窗口已用 ≥ 70%）时，在菜单栏图标旁显示该额度的已用百分比，不必打开面板即可感知。可在设置中开关。
+- 多语言（i18n）：界面支持简体中文 / 英文本地化（`Localizable.strings`），默认跟随系统语言；设置中新增「语言」选项可主动切换（跟随系统 / English / 简体中文），切换后自动重启以生效。
+- 主题与配色：新增「外观」设置——浅色 / 深色 / 跟随系统（基于 `NSApp.appearance`，对菜单栏弹窗可靠生效），以及 6 种强调色预设（紫 / 蓝 / 绿 / 橙 / 红 / 粉），影响标题图标、设置高亮、Keep Awake 选中态等品牌元素。
+
+### Changed
+- 电池健康详情小增强：充放电状态加状态色标圆点（充电=绿 / 外接=蓝 / 放电=橙），健康度加颜色化进度条（≥80% 绿、≥50% 橙、否则红）。
+- 电池充放电状态改用语言无关的 `BatteryChargeState` 枚举驱动配色，与已本地化的显示文本解耦，避免翻译后配色判断失效。
+
+### Fixed
+- 修复深色模式设置无效的问题：`.preferredColorScheme` 对 `MenuBarExtra` 的窗口样式不可靠，改用 `NSApp.appearance` 应用级外观。
+- 修复 Keep Awake 时长按钮（Off/15m/1h/2h…）选中态未跟随强调色的问题。
+- 修复并发告警：`UserNotifications` 相关的 Sendable 警告（`@preconcurrency` 导入 + 闭包内重取 `UNUserNotificationCenter`，避免捕获非 Sendable 实例）。
+- 补齐大量界面文案本地化：Provider 卡片（Cost/Quota、状态徽章、额度刷新中/不可用、来源描述）、系统详情页（CPU/内存/磁盘各标题与行标签）、Keep Awake 状态文案、底部操作（刷新/退出/未更新）、电池与 CPU 数据兜底文案等。
+
+### Tests
+- 新增 `SettingsEnumTests`：覆盖 `AppLanguage.localeCode`、`AppearanceMode` 完整性、`AccentPreset` 颜色名映射、`UsageAlertThreshold.percent` 及单调性。
+- 新增 `UsageAlertTests`：覆盖额度通知去重签名 `UsageAlertManager.signature` 的稳定性与隔离性（provider / 窗口 / 重置周期 / 阈值档不同则 key 不同）。
+- 新增 `mostConstrainedWindow` 选取逻辑测试（空列表 / 无窗口 / 跨 Provider 选最高）。
+
 ## [1.1.1] - 2026-06-28
 
 ### Changed
-- 更换 App 图标为全新设计（紫红渐变 + 柱状图与上升趋势线），更贴合用量统计主题。
+- 更换 App 图标为全新设计（深色终端风格 + `>_` 提示符 + 蓝紫渐变双进度环），更贴合「AI 编程命令行用量监控」的定位。
 
 ## [1.1.0] - 2026-06-28
 
@@ -50,7 +73,8 @@
 - 本地优先设计：成本基于本地 JSONL 日志按模型定价估算，不上传用量数据；默认避免 Claude Keychain 访问。
 - 打包与发布脚本：`scripts/package_dmg.sh`、`scripts/notarize_dmg.sh`。
 
-[Unreleased]: https://github.com/Andrew-liu/AIStat/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Andrew-liu/AIStat/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Andrew-liu/AIStat/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/Andrew-liu/AIStat/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Andrew-liu/AIStat/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Andrew-liu/AIStat/releases/tag/v1.0.0

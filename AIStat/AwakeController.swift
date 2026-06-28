@@ -42,8 +42,8 @@ enum AwakeMode: String, CaseIterable, Identifiable {
 final class AwakeController: ObservableObject {
     @Published private(set) var mode: AwakeMode = .off
     @Published private(set) var endsAt: Date?
-    @Published private(set) var remainingText = "Sleep allowed"
-    @Published private(set) var detailText = "Normal power settings"
+    @Published private(set) var remainingText = NSLocalizedString("awake.sleepAllowed", comment: "")
+    @Published private(set) var detailText = NSLocalizedString("awake.normalPower", comment: "")
 
     private var systemAssertionID = IOPMAssertionID(0)
     private var displayAssertionID = IOPMAssertionID(0)
@@ -75,16 +75,16 @@ final class AwakeController: ObservableObject {
             releaseAssertions()
             mode = .off
             endsAt = nil
-            remainingText = "Sleep allowed"
-            detailText = "Normal power settings"
+            remainingText = NSLocalizedString("awake.sleepAllowed", comment: "")
+            detailText = NSLocalizedString("awake.normalPower", comment: "")
             return
         }
 
         guard enableAwakeMode() else {
             mode = .off
             endsAt = nil
-            remainingText = "Unable to keep awake"
-            detailText = "Power assertion failed"
+            remainingText = NSLocalizedString("awake.unable", comment: "")
+            detailText = NSLocalizedString("awake.assertionFailed", comment: "")
             return
         }
 
@@ -99,7 +99,7 @@ final class AwakeController: ObservableObject {
         } else {
             endsAt = nil
         }
-        detailText = "Prevents system sleep and display dimming"
+        detailText = NSLocalizedString("awake.prevents", comment: "")
         updateRemainingText()
         startTickerIfNeeded()
     }
@@ -161,20 +161,20 @@ final class AwakeController: ObservableObject {
 
     private func updateRemainingText() {
         guard mode != .off else {
-            remainingText = "Sleep allowed"
+            remainingText = NSLocalizedString("awake.sleepAllowed", comment: "")
             return
         }
         guard let endsAt else {
-            remainingText = "Keeping awake indefinitely"
+            remainingText = NSLocalizedString("awake.indefinite", comment: "")
             return
         }
         let seconds = max(0, Int(endsAt.timeIntervalSinceNow))
         let hours = seconds / 3_600
         let minutes = (seconds % 3_600) / 60
         if hours > 0 {
-            remainingText = "\(hours)h \(minutes)m remaining"
+            remainingText = String(format: NSLocalizedString("awake.remainingHM", comment: ""), hours, minutes)
         } else {
-            remainingText = "\(max(1, minutes))m remaining"
+            remainingText = String(format: NSLocalizedString("awake.remainingM", comment: ""), max(1, minutes))
         }
     }
 }

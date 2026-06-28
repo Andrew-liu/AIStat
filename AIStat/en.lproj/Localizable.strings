@@ -1,0 +1,133 @@
+/* Navigation */
+"nav.back" = "Back";
+"footer.notUpdated" = "Not updated";
+"action.refresh" = "Refresh";
+"action.quit" = "Quit";
+"common.noData" = "No data";
+
+/* Providers */
+"providers.title" = "Providers";
+"cost.today" = "Today";
+"cost.thisMonth" = "This Month";
+"provider.cost" = "Cost";
+"provider.quota" = "Quota";
+"provider.status.connected" = "Connected";
+"provider.status.available" = "Available";
+"provider.status.desktopOnly" = "Desktop only";
+"provider.status.notConfigured" = "Not configured";
+"provider.quotaRefreshing" = "Quota refreshing";
+"provider.quotaUnavailable" = "Quota unavailable";
+"provider.sourceRefreshing" = "Refreshing…";
+"provider.sourceLastKnown" = "Last known quota";
+
+/* Keep Awake */
+"awake.title" = "Keep Awake";
+"awake.sleepAllowed" = "Sleep allowed";
+"awake.normalPower" = "Normal power settings";
+"awake.unable" = "Unable to keep awake";
+"awake.assertionFailed" = "Power assertion failed";
+"awake.prevents" = "Prevents system sleep and display dimming";
+"awake.indefinite" = "Keeping awake indefinitely";
+"awake.remainingHM" = "%dh %dm remaining";
+"awake.remainingM" = "%dm remaining";
+"awake.enable" = "Enable Keep Awake";
+"awake.disable" = "Disable Keep Awake";
+
+/* System metrics */
+"metric.cpu" = "CPU";
+"metric.mem" = "MEM";
+"metric.disk" = "DISK";
+"metric.bat" = "BAT";
+
+/* Settings */
+"settings.title" = "Settings";
+"settings.general" = "General";
+"settings.refreshInterval" = "Refresh interval";
+"settings.launchAtLogin" = "Launch at login";
+"settings.appearance" = "Appearance";
+"settings.theme" = "Theme";
+"settings.accentColor" = "Accent color";
+"settings.notifications" = "Notifications";
+"settings.usageAlert" = "Usage alert";
+"settings.showUsageInMenuBar" = "Show usage in menu bar";
+"settings.providers" = "Providers";
+
+/* Appearance modes */
+"appearance.system" = "System";
+"appearance.light" = "Light";
+"appearance.dark" = "Dark";
+
+/* Language */
+"settings.language" = "Language";
+"language.system" = "System";
+"language.english" = "English";
+"language.chinese" = "简体中文";
+"settings.languageRestartHint" = "AIStat will restart to apply the language change.";
+
+/* Battery */
+"battery.health" = "Health";
+"battery.healthLabel" = "Health";
+"battery.condition" = "Condition";
+"battery.cycleCount" = "Cycle Count";
+"battery.powerAdapter" = "Power Adapter";
+"battery.temperature" = "Temperature";
+"battery.power" = "Power";
+"battery.timeOnAC" = "Time on AC";
+"battery.capacity" = "Capacity";
+"battery.remainingCapacity" = "Remaining Charge Capacity";
+"battery.fullCapacity" = "Full Charge Capacity";
+"battery.designCapacity" = "Design Charge Capacity";
+
+/* CPU detail */
+"cpu.usage" = "CPU Usage";
+"cpu.user" = "user";
+"cpu.sys" = "sys";
+"cpu.idle" = "idle";
+"cpu.loadAvg" = "Load avg";
+"cpu.state" = "CPU State";
+"cpu.mode" = "Mode";
+"cpu.soc" = "SoC";
+"cpu.chip" = "Chip";
+"cpu.system" = "System";
+"cpu.health" = "Health";
+"cpu.processes" = "Processes";
+"cpu.uptime" = "Uptime";
+
+/* Memory detail */
+"mem.usage" = "Memory Usage";
+"mem.wired" = "Wired";
+"mem.active" = "Active";
+"mem.compressed" = "Compressed";
+"mem.free" = "Free";
+"mem.pressure" = "Memory Pressure";
+"mem.physical" = "Physical Memory";
+"mem.physicalMemory" = "Physical Memory";
+"mem.used" = "Memory Used";
+"mem.cachedFiles" = "Cached Files";
+"mem.pages" = "Pages";
+"mem.pageIns" = "Page Ins";
+"mem.pageOuts" = "Page Outs";
+"mem.swap" = "Swap Usage";
+
+/* Disk detail */
+"disk.volumes" = "Volumes";
+"disk.used" = "used";
+"disk.free" = "free";
+
+/* Battery / system data fallbacks */
+"battery.charging" = "Charging";
+"battery.discharging" = "Discharging";
+"battery.connected" = "Connected";
+"battery.notConnected" = "Not connected";
+"battery.calculatingCharge" = "Calculating charge time";
+"battery.calculatingRemaining" = "Calculating remaining";
+"cpu.appleSilicon" = "Apple Silicon";
+
+/* Provider data sources */
+"source.cachedQuota" = "Cached quota";
+"source.claudeLocalLogs" = "Claude local logs";
+"source.claudeLogsNotFound" = "Claude logs not found";
+
+/* Usage alert notification */
+"alert.body.used" = "Usage reached %d%%.";
+"alert.body.resets" = "Resets %@.";

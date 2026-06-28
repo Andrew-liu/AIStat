@@ -90,6 +90,9 @@ final class CodexUsageModel: ObservableObject {
     /// 应用设置（刷新间隔、Provider 启用状态）。
     private weak var settings: AppSettings?
 
+    /// 每次 providers 更新后触发，供外部（如额度通知）评估最新用量。
+    var onProvidersUpdated: (([ProviderUsage]) -> Void)?
+
     init() {
         let reader = self.reader
         self.registeredProviders = UsageProviderRegistry.makeProviders(reader: reader)
@@ -144,7 +147,7 @@ final class CodexUsageModel: ObservableObject {
                 symbolName: provider.symbolName,
                 accentName: provider.accentName,
                 status: .stale,
-                source: "Refreshing…",
+                source: NSLocalizedString("provider.sourceRefreshing", comment: ""),
                 quotaWindows: [],
                 cost: .empty,
                 isConfigured: true
@@ -173,6 +176,22 @@ final class CodexUsageModel: ObservableObject {
         providers.first { $0.id == "codex" }?
             .quotaWindows.first { $0.name == "Week" }?
             .remainingPercent
+    }
+
+    /// 所有 Provider 中已用百分比最高的额度窗口（最紧张的额度），供菜单栏显示。
+    var mostConstrainedWindow: (providerName: String, window: RateLimitWindow)? {
+        Self.mostConstrainedWindow(in: providers)
+    }
+
+    /// 纯函数：从给定 Provider 列表中找出已用百分比最高的额度窗口。
+    /// 抽成静态方法以便单元测试覆盖。
+    nonisolated static func mostConstrainedWindow(
+        in providers: [ProviderUsage]
+    ) -> (providerName: String, window: RateLimitWindow)? {
+        providers
+            .flatMap { provider in provider.quotaWindows.map { (provider.name, $0) } }
+            .max { $0.1.usedPercent < $1.1.usedPercent }
+            .map { (providerName: $0.0, window: $0.1) }
     }
 
     /// 刷新所有已启用的 Provider。
@@ -215,7 +234,7 @@ final class CodexUsageModel: ObservableObject {
                     symbolName: current.symbolName,
                     accentName: current.accentName,
                     status: current.status,
-                    source: "Last known quota",
+                    source: NSLocalizedString("provider.sourceLastKnown", comment: ""),
                     quotaWindows: prior.quotaWindows,
                     cost: current.cost,
                     isConfigured: true
@@ -225,6 +244,7 @@ final class CodexUsageModel: ObservableObject {
             providers = fresh
             updatedAt = Date()
             isRefreshing = false
+            onProvidersUpdated?(fresh)
         }
     }
 

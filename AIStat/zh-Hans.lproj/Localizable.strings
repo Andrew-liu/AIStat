@@ -1,0 +1,133 @@
+/* Navigation */
+"nav.back" = "返回";
+"footer.notUpdated" = "尚未更新";
+"action.refresh" = "刷新";
+"action.quit" = "退出";
+"common.noData" = "暂无数据";
+
+/* Providers */
+"providers.title" = "服务商";
+"cost.today" = "今日";
+"cost.thisMonth" = "本月";
+"provider.cost" = "花费";
+"provider.quota" = "额度";
+"provider.status.connected" = "已连接";
+"provider.status.available" = "可用";
+"provider.status.desktopOnly" = "仅检测到桌面端";
+"provider.status.notConfigured" = "未配置";
+"provider.quotaRefreshing" = "额度刷新中";
+"provider.quotaUnavailable" = "额度不可用";
+"provider.sourceRefreshing" = "刷新中…";
+"provider.sourceLastKnown" = "上次额度";
+
+/* Keep Awake */
+"awake.title" = "保持唤醒";
+"awake.sleepAllowed" = "允许睡眠";
+"awake.normalPower" = "正常电源设置";
+"awake.unable" = "无法保持唤醒";
+"awake.assertionFailed" = "电源断言失败";
+"awake.prevents" = "阻止系统睡眠与息屏";
+"awake.indefinite" = "持续保持唤醒";
+"awake.remainingHM" = "剩余 %d 小时 %d 分";
+"awake.remainingM" = "剩余 %d 分";
+"awake.enable" = "开启保持唤醒";
+"awake.disable" = "关闭保持唤醒";
+
+/* System metrics */
+"metric.cpu" = "处理器";
+"metric.mem" = "内存";
+"metric.disk" = "磁盘";
+"metric.bat" = "电池";
+
+/* Settings */
+"settings.title" = "设置";
+"settings.general" = "通用";
+"settings.refreshInterval" = "刷新间隔";
+"settings.launchAtLogin" = "开机启动";
+"settings.appearance" = "外观";
+"settings.theme" = "主题";
+"settings.accentColor" = "强调色";
+"settings.notifications" = "通知";
+"settings.usageAlert" = "用量提醒";
+"settings.showUsageInMenuBar" = "在菜单栏显示用量";
+"settings.providers" = "服务商";
+
+/* Appearance modes */
+"appearance.system" = "跟随系统";
+"appearance.light" = "浅色";
+"appearance.dark" = "深色";
+
+/* Language */
+"settings.language" = "语言";
+"language.system" = "跟随系统";
+"language.english" = "English";
+"language.chinese" = "简体中文";
+"settings.languageRestartHint" = "切换语言后 AIStat 将自动重启以生效。";
+
+/* Battery */
+"battery.health" = "健康度";
+"battery.healthLabel" = "健康度";
+"battery.condition" = "状况";
+"battery.cycleCount" = "循环次数";
+"battery.powerAdapter" = "电源适配器";
+"battery.temperature" = "温度";
+"battery.power" = "电源";
+"battery.timeOnAC" = "接通电源时长";
+"battery.capacity" = "容量";
+"battery.remainingCapacity" = "当前电量容量";
+"battery.fullCapacity" = "完全充电容量";
+"battery.designCapacity" = "设计容量";
+
+/* CPU detail */
+"cpu.usage" = "处理器占用";
+"cpu.user" = "用户";
+"cpu.sys" = "系统";
+"cpu.idle" = "空闲";
+"cpu.loadAvg" = "平均负载";
+"cpu.state" = "处理器状态";
+"cpu.mode" = "模式";
+"cpu.soc" = "芯片";
+"cpu.chip" = "型号";
+"cpu.system" = "系统";
+"cpu.health" = "健康度";
+"cpu.processes" = "进程";
+"cpu.uptime" = "运行时长";
+
+/* Memory detail */
+"mem.usage" = "内存占用";
+"mem.wired" = "常驻";
+"mem.active" = "活跃";
+"mem.compressed" = "已压缩";
+"mem.free" = "空闲";
+"mem.pressure" = "内存压力";
+"mem.physical" = "物理内存";
+"mem.physicalMemory" = "物理内存";
+"mem.used" = "已用内存";
+"mem.cachedFiles" = "缓存文件";
+"mem.pages" = "分页";
+"mem.pageIns" = "换入";
+"mem.pageOuts" = "换出";
+"mem.swap" = "交换区使用";
+
+/* Disk detail */
+"disk.volumes" = "宗卷";
+"disk.used" = "已用";
+"disk.free" = "可用";
+
+/* Battery / system data fallbacks */
+"battery.charging" = "充电中";
+"battery.discharging" = "放电中";
+"battery.connected" = "已接通";
+"battery.notConnected" = "未接通";
+"battery.calculatingCharge" = "正在计算充电时间";
+"battery.calculatingRemaining" = "正在计算剩余时间";
+"cpu.appleSilicon" = "Apple 芯片";
+
+/* Provider data sources */
+"source.cachedQuota" = "缓存额度";
+"source.claudeLocalLogs" = "Claude 本地日志";
+"source.claudeLogsNotFound" = "未找到 Claude 日志";
+
+/* Usage alert notification */
+"alert.body.used" = "用量已达到 %d%%。";
+"alert.body.resets" = "将于 %@ 重置。";

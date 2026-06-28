@@ -8,6 +8,7 @@ extension Color {
         case "green": return Color(red: 0.16, green: 0.72, blue: 0.36)
         case "orange": return Color(red: 0.95, green: 0.52, blue: 0.18)
         case "red": return Color(red: 0.92, green: 0.24, blue: 0.24)
+        case "pink": return Color(red: 0.95, green: 0.35, blue: 0.60)
         default: return Color.primary.opacity(0.82)
         }
     }

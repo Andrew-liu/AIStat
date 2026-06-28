@@ -63,7 +63,7 @@ final class CPUStatsModule: @unchecked Sendable {
     private nonisolated func readSoCName() -> String {
         let value = runner.run("/usr/sbin/sysctl", arguments: ["-n", "machdep.cpu.brand_string"])?
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        return value?.isEmpty == false ? value! : "Apple Silicon"
+        return value?.isEmpty == false ? value! : NSLocalizedString("cpu.appleSilicon", comment: "")
     }
 
     private nonisolated func readUptimeText() -> String {

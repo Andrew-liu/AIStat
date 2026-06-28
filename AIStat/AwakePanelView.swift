@@ -2,6 +2,8 @@ import SwiftUI
 
 struct AwakePanelView: View {
     @ObservedObject var awakeController: AwakeController
+    /// 当前品牌强调色（跟随设置）。
+    var accent: Color = .providerAccent("purple")
 
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
@@ -15,10 +17,10 @@ struct AwakePanelView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .help(awakeController.isKeepingAwake ? "Disable Keep Awake" : "Enable Keep Awake")
+                .help(Text(awakeController.isKeepingAwake ? "awake.disable" : "awake.enable"))
 
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Keep Awake")
+                    Text("awake.title")
                         .font(.system(size: 12.5, weight: .semibold))
                     Text(awakeController.statusText)
                         .font(.system(size: 10.5, weight: .medium))
@@ -52,7 +54,7 @@ struct AwakePanelView: View {
                             .padding(.vertical, 5)
                             .background {
                                 Capsule()
-                                    .fill(awakeController.mode == mode ? Color.accentColor : .secondary.opacity(0.10))
+                                    .fill(awakeController.mode == mode ? accent : .secondary.opacity(0.10))
                             }
                     }
                     .buttonStyle(.plain)
