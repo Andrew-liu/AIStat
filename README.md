@@ -1,8 +1,12 @@
-# AIStat
+<h1 align="center">AIStat</h1>
 
-**一个紧凑的 macOS 菜单栏仪表盘，集中查看 AI 编程用量、系统状态，并提供 Keep Awake 防睡眠控制。**
+<p align="center">
+  <strong>一个紧凑的 macOS 菜单栏仪表盘，集中查看 AI 编程用量、系统状态，并提供 Keep Awake 防睡眠控制。</strong>
+</p>
 
-AIStat 把 Codex / Claude 的额度、本机 Token 与成本、系统状态，以及 Keep Awake 防睡眠开关集中在一个面板里 —— 无需在多个应用之间来回切换，即可掌握 AI 编程预算、让 Mac 保持运行，并随时查看设备状态。
+<p align="center">
+  AIStat 把 Codex / Claude 的额度、本机 Token 与成本、系统状态，以及 Keep Awake 防睡眠开关集中在一个面板里 —— 无需在多个应用之间来回切换，即可掌握 AI 编程预算、让 Mac 保持运行，并随时查看设备状态。
+</p>
 
 <p align="center">
   <a href="https://github.com/Andrew-liu/AIStat/releases/latest"><img src="https://img.shields.io/github/v/release/Andrew-liu/AIStat?style=for-the-badge&logo=apple" alt="Latest Release"></a>

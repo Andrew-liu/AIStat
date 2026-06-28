@@ -1,8 +1,12 @@
-# AIStat
+<h1 align="center">AIStat</h1>
 
-**A compact macOS menu bar dashboard for AI coding usage, system status, and Keep Awake.**
+<p align="center">
+  <strong>A compact macOS menu bar dashboard for AI coding usage, system status, and Keep Awake.</strong>
+</p>
 
-AIStat brings Codex / Claude usage quota, local token & cost, system health, and a Keep Awake switch together in one tidy menu bar panel — so you can track AI coding budget, keep your Mac running, and glance at device status without juggling multiple apps.
+<p align="center">
+  AIStat brings Codex / Claude usage quota, local token &amp; cost, system health, and a Keep Awake switch together in one tidy menu bar panel — so you can track AI coding budget, keep your Mac running, and glance at device status without juggling multiple apps.
+</p>
 
 <p align="center">
   <a href="https://github.com/Andrew-liu/AIStat/releases/latest"><img src="https://img.shields.io/github/v/release/Andrew-liu/AIStat?style=for-the-badge&logo=apple" alt="Latest Release"></a>
