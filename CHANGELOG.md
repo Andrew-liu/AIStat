@@ -6,6 +6,11 @@
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-06-28
+
+### Changed
+- 更换 App 图标为全新设计（紫红渐变 + 柱状图与上升趋势线），更贴合用量统计主题。
+
 ## [1.1.0] - 2026-06-28
 
 ### Added
@@ -45,6 +50,7 @@
 - 本地优先设计：成本基于本地 JSONL 日志按模型定价估算，不上传用量数据；默认避免 Claude Keychain 访问。
 - 打包与发布脚本：`scripts/package_dmg.sh`、`scripts/notarize_dmg.sh`。
 
-[Unreleased]: https://github.com/Andrew-liu/AIStat/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Andrew-liu/AIStat/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/Andrew-liu/AIStat/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Andrew-liu/AIStat/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Andrew-liu/AIStat/releases/tag/v1.0.0
