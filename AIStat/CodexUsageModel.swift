@@ -77,44 +77,74 @@ struct CodexUsageSummary: Sendable {
 
 @MainActor
 final class CodexUsageModel: ObservableObject {
-    @Published private(set) var summary = CodexUsageSummary.empty
+    /// 平级 Provider 列表（统一抽象的对外数据）。
+    @Published private(set) var providers: [ProviderUsage] = []
     @Published private(set) var isRefreshing = false
+    @Published private(set) var updatedAt: Date?
 
     private let reader = CodexUsageReader()
+    private let registeredProviders: [UsageProvider]
     private var refreshTask: Task<Void, Never>?
 
     init() {
-        if let cached = reader.readCachedSummary() {
-            summary = cached
+        let reader = self.reader
+        self.registeredProviders = UsageProviderRegistry.makeProviders(reader: reader)
+
+        // 启动时先用缓存填充，避免空白。
+        let cached = registeredProviders.compactMap { $0.cachedUsage() }
+        if !cached.isEmpty {
+            providers = cached
+            updatedAt = Date()
         }
         refresh()
     }
 
+    /// Codex 周额度剩余百分比，供其它视图复用。
     var weeklyRemainingPercent: Double? {
-        summary.weekly?.remainingPercent
+        providers.first { $0.id == "codex" }?
+            .quotaWindows.first { $0.name == "Week" }?
+            .remainingPercent
     }
 
     func refresh() {
         guard !isRefreshing else { return }
         isRefreshing = true
         refreshTask?.cancel()
+
+        let registered = registeredProviders
+        let previous = providers
         refreshTask = Task {
-            var value = await reader.readSummary()
+            // 并发拉取所有 Provider。
+            var fresh: [ProviderUsage] = await withTaskGroup(of: (Int, ProviderUsage).self) { group in
+                for (index, provider) in registered.enumerated() {
+                    group.addTask { (index, await provider.fetchUsage()) }
+                }
+                var results: [(Int, ProviderUsage)] = []
+                for await item in group { results.append(item) }
+                return results.sorted { $0.0 < $1.0 }.map(\.1)
+            }
             guard !Task.isCancelled else { return }
-            if value.quotaWindows.isEmpty, !summary.quotaWindows.isEmpty {
-                value.quotaWindows = summary.quotaWindows
-                value.fiveHour = summary.fiveHour
-                value.weekly = summary.weekly
-                value.todayUsedPercent = summary.todayUsedPercent
-                value.todayUnusedPercent = summary.todayUnusedPercent
-                value.source = "Last known quota"
+
+            // 「永不空白」：本次额度为空但上次有值时，回退到上次额度。
+            fresh = fresh.map { current in
+                guard current.quotaWindows.isEmpty,
+                      let prior = previous.first(where: { $0.id == current.id }),
+                      !prior.quotaWindows.isEmpty else { return current }
+                return ProviderUsage(
+                    id: current.id,
+                    name: current.name,
+                    symbolName: current.symbolName,
+                    accentName: current.accentName,
+                    status: current.status,
+                    source: "Last known quota",
+                    quotaWindows: prior.quotaWindows,
+                    cost: current.cost,
+                    isConfigured: true
+                )
             }
-            if value.claude.quotaWindows.isEmpty, !summary.claude.quotaWindows.isEmpty {
-                value.claude.quotaWindows = summary.claude.quotaWindows
-                value.claude.source = "Last known quota"
-                value.claude.isConfigured = true
-            }
-            summary = value
+
+            providers = fresh
+            updatedAt = Date()
             isRefreshing = false
         }
     }

@@ -1,6 +1,123 @@
 import Foundation
 
+// MARK: - Provider 适配层
+//
+// 以下扩展把 reader 内部既有的取数 / 解析逻辑，归一化为平级的 `ProviderUsage`，
+// 供 `CodexProvider` 与 `ClaudeProvider` 复用。原有 `readSummary()` / `readCachedSummary()`
+// 仍保留，便于渐进迁移与回归对比。
+extension CodexUsageReader {
+    /// Codex 在线用量：额度（含多源回退）+ 本地成本。
+    nonisolated func loadCodexUsage() async -> ProviderUsage {
+        await Task.detached(priority: .utility) {
+            let executable = self.providerCodexExecutable
+            let installed = executable != nil
+            let quota = self.providerReadCodexQuota(codex: executable)
+            let cost = self.providerReadCostSummary()
+            let hasData = !quota.windows.isEmpty || cost.todayTokens > 0 || cost.monthTokens > 0
+            let status: AIProviderStatus = hasData ? .operational : (installed ? .stale : .unavailable)
+            return ProviderUsage(
+                id: "codex",
+                name: "Codex",
+                symbolName: "terminal.fill",
+                accentName: "purple",
+                status: status,
+                source: quota.source,
+                quotaWindows: quota.windows,
+                cost: cost,
+                isConfigured: installed || !quota.windows.isEmpty
+            )
+        }.value
+    }
+
+    /// Codex 启动缓存：仅额度，用于「永不空白」。
+    nonisolated func cachedCodexUsage() -> ProviderUsage? {
+        let windows = providerReadCachedCodexQuota() ?? providerReadLatestAnyCodexQuotaFromLogs()
+        guard !windows.isEmpty else { return nil }
+        return ProviderUsage(
+            id: "codex",
+            name: "Codex",
+            symbolName: "terminal.fill",
+            accentName: "purple",
+            status: .stale,
+            source: "Cached quota",
+            quotaWindows: windows,
+            cost: .empty,
+            isConfigured: true
+        )
+    }
+
+    /// Claude 在线用量：额度（多源回退）+ 本地成本。
+    nonisolated func loadClaudeUsage() async -> ProviderUsage {
+        await Task.detached(priority: .utility) {
+            let summary = self.providerReadClaudeUsageSummary()
+            let hasData = !summary.quotaWindows.isEmpty || summary.cost.todayTokens > 0 || summary.cost.monthTokens > 0
+            let status: AIProviderStatus = hasData
+                ? .operational
+                : (summary.source.contains("Desktop detected") ? .limited : .unavailable)
+            return ProviderUsage(
+                id: "claude",
+                name: "Claude",
+                symbolName: "sparkles",
+                accentName: "purple",
+                status: status,
+                source: summary.source,
+                quotaWindows: summary.quotaWindows,
+                cost: summary.cost,
+                isConfigured: summary.isConfigured
+            )
+        }.value
+    }
+
+    /// Claude 启动缓存：仅额度。
+    nonisolated func cachedClaudeUsage() -> ProviderUsage? {
+        guard let windows = providerReadCachedClaudeQuota(), !windows.isEmpty else { return nil }
+        return ProviderUsage(
+            id: "claude",
+            name: "Claude",
+            symbolName: "sparkles",
+            accentName: "purple",
+            status: .stale,
+            source: "Cached quota",
+            quotaWindows: windows,
+            cost: .empty,
+            isConfigured: true
+        )
+    }
+}
+
 final class CodexUsageReader {
+    // MARK: Provider 适配桥接
+    // 这些内部方法转调既有的私有实现，使 Provider 扩展层（在本文件顶部）能够复用，
+    // 同时不改变任何原有解析逻辑。
+
+    nonisolated func providerReadCodexQuota(codex: String?) -> (windows: [RateLimitWindow], source: String) {
+        readCodexQuota(codex: codex)
+    }
+
+    nonisolated func providerReadCostSummary() -> TokenCostSummary {
+        readCostSummary()
+    }
+
+    nonisolated func providerReadCachedCodexQuota() -> [RateLimitWindow]? {
+        readCachedCodexQuota()
+    }
+
+    nonisolated func providerReadLatestAnyCodexQuotaFromLogs() -> [RateLimitWindow] {
+        readLatestAnyCodexQuotaFromLogs()
+    }
+
+    nonisolated func providerReadClaudeUsageSummary() -> ClaudeUsageSummary {
+        readClaudeUsageSummary()
+    }
+
+    nonisolated func providerReadCachedClaudeQuota() -> [RateLimitWindow]? {
+        readCachedClaudeQuota()
+    }
+
+    nonisolated var providerCodexExecutable: String? {
+        codexExecutable
+    }
+
     nonisolated func readCachedSummary() -> CodexUsageSummary? {
         let windows = readCachedCodexQuota() ?? readLatestAnyCodexQuotaFromLogs()
         guard !windows.isEmpty else { return nil }

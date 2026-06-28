@@ -13,9 +13,8 @@ struct ContentView: View {
     @EnvironmentObject private var awakeController: AwakeController
     @State private var page: DashboardPage = .codex
 
-    private var summary: CodexUsageSummary { model.summary }
     private var stats: SystemStatsSummary { systemStats.summary }
-    private var providers: [AIUsageProvider] { AIUsageProviderFactory.providers(from: summary) }
+    private var providers: [ProviderUsage] { model.providers }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -99,7 +98,7 @@ struct ContentView: View {
 
     private var footer: some View {
         HStack(spacing: 10) {
-            Text(summary.updatedAt?.formatted(date: .omitted, time: .shortened) ?? "Not updated")
+            Text(model.updatedAt?.formatted(date: .omitted, time: .shortened) ?? "Not updated")
                 .lineLimit(1)
             Spacer()
             Button {

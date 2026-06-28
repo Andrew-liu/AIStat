@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProviderUsageCard: View {
-    let provider: AIUsageProvider
+    let provider: ProviderUsage
 
     private var accent: Color { .providerAccent(provider.accentName) }
 
@@ -151,7 +151,7 @@ private struct QuotaRow: View {
 }
 
 private struct QuotaUnavailableRow: View {
-    let provider: AIUsageProvider
+    let provider: ProviderUsage
 
     var body: some View {
         HStack(spacing: 8) {

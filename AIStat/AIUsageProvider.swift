@@ -8,116 +8,47 @@ enum AIProviderStatus: String, Sendable {
     case limited = "Limited"
 }
 
+/// 单个额度窗口的展示数据（由 `RateLimitWindow` 派生）。
 struct AIUsageMetric: Identifiable, Sendable {
     let id: String
     let title: String
-    let subtitle: String
     let usedText: String
     let remainingText: String
     let resetText: String
     let percentUsed: Double?
     let accentName: String
-
-    var percentRemaining: Double? {
-        percentUsed.map { max(0, min(100, 100 - $0)) }
-    }
 }
 
-struct AIUsageProvider: Identifiable, Sendable {
-    let id: String
-    let name: String
-    let modelName: String
-    let symbolName: String
-    let accentName: String
-    let status: AIProviderStatus
-    let authSource: String
-    let metrics: [AIUsageMetric]
-    let todayTokensText: String
-    let todayCostText: String
-    let monthTokensText: String
-    let monthCostText: String
-    let note: String
+// MARK: - ProviderUsage 展示映射
+//
+// 把统一的 `ProviderUsage` 数据模型映射为 UI 所需的展示文本，UI 层只依赖这些计算属性。
+extension ProviderUsage {
+    var note: String { source }
+    var authSource: String { source }
 
-    var primaryMetric: AIUsageMetric? {
-        metrics.first
-    }
-}
+    var todayTokensText: String { AIUsageFormat.tokens(cost.todayTokens) }
+    var todayCostText: String { AIUsageFormat.cost(cost.todayCost, estimated: cost.isEstimated) }
+    var monthTokensText: String { AIUsageFormat.tokens(cost.monthTokens) }
+    var monthCostText: String { AIUsageFormat.cost(cost.monthCost, estimated: cost.isEstimated) }
 
-enum AIUsageProviderFactory {
-    static func providers(from summary: CodexUsageSummary) -> [AIUsageProvider] {
-        [
-            codexProvider(from: summary),
-            claudeProvider(from: summary.claude)
-        ]
-    }
-
-    private static func codexProvider(from summary: CodexUsageSummary) -> AIUsageProvider {
-        let installed = summary.isInstalled
-        let windows = codexWindows(from: summary)
-        let hasUsageData = !windows.isEmpty || summary.cost.todayTokens > 0 || summary.cost.monthTokens > 0
-        let status: AIProviderStatus = hasUsageData ? .operational : (installed ? .stale : .unavailable)
-
-        return AIUsageProvider(
-            id: "codex",
-            name: "Codex",
-            modelName: "OAuth API / CLI RPC",
-            symbolName: "terminal.fill",
-            accentName: "purple",
-            status: status,
-            authSource: summary.source,
-            metrics: windows.map { quotaMetric(providerID: "codex", window: $0) },
-            todayTokensText: formatTokens(summary.cost.todayTokens),
-            todayCostText: formatCost(summary.cost.todayCost, estimated: summary.cost.isEstimated),
-            monthTokensText: formatTokens(summary.cost.monthTokens),
-            monthCostText: formatCost(summary.cost.monthCost, estimated: summary.cost.isEstimated),
-            note: summary.source
-        )
-    }
-
-    private static func codexWindows(from summary: CodexUsageSummary) -> [RateLimitWindow] {
-        if !summary.quotaWindows.isEmpty { return summary.quotaWindows }
-        let explicit = [summary.fiveHour, summary.weekly].compactMap { $0 }
-        if !explicit.isEmpty { return explicit }
-        if let used = summary.todayUsedPercent {
-            return [RateLimitWindow(id: "codex-fallback", name: "Quota", usedPercent: used, resetsAt: nil, durationMinutes: nil)]
+    var metrics: [AIUsageMetric] {
+        quotaWindows.map { window in
+            AIUsageMetric(
+                id: window.id.isEmpty ? "\(id)-\(window.name.lowercased())" : window.id,
+                title: window.name,
+                usedText: AIUsageFormat.percent(window.usedPercent, suffix: " used"),
+                remainingText: AIUsageFormat.percent(window.remainingPercent, suffix: " left"),
+                resetText: AIUsageFormat.resetText(window.resetsAt),
+                percentUsed: window.usedPercent,
+                accentName: AIUsageFormat.accentName(for: window.name)
+            )
         }
-        return []
     }
+}
 
-    private static func claudeProvider(from summary: ClaudeUsageSummary) -> AIUsageProvider {
-        let hasUsageData = !summary.quotaWindows.isEmpty || summary.cost.todayTokens > 0 || summary.cost.monthTokens > 0
-        let status: AIProviderStatus = hasUsageData ? .operational : (summary.source.contains("Desktop detected") ? .limited : .unavailable)
-        return AIUsageProvider(
-            id: "claude",
-            name: "Claude",
-            modelName: "OAuth API / CLI / local logs",
-            symbolName: "sparkles",
-            accentName: "purple",
-            status: status,
-            authSource: summary.source,
-            metrics: summary.quotaWindows.map { quotaMetric(providerID: "claude", window: $0) },
-            todayTokensText: formatTokens(summary.cost.todayTokens),
-            todayCostText: formatCost(summary.cost.todayCost, estimated: summary.cost.isEstimated),
-            monthTokensText: formatTokens(summary.cost.monthTokens),
-            monthCostText: formatCost(summary.cost.monthCost, estimated: summary.cost.isEstimated),
-            note: summary.source
-        )
-    }
-
-    private static func quotaMetric(providerID: String, window: RateLimitWindow) -> AIUsageMetric {
-        AIUsageMetric(
-            id: window.id.isEmpty ? "\(providerID)-\(window.name.lowercased())" : window.id,
-            title: window.name,
-            subtitle: "\(window.name) quota",
-            usedText: percent(window.usedPercent, suffix: " used"),
-            remainingText: percent(window.remainingPercent, suffix: " left"),
-            resetText: resetText(window.resetsAt),
-            percentUsed: window.usedPercent,
-            accentName: accentName(for: window.name)
-        )
-    }
-
-    private static func accentName(for title: String) -> String {
+/// AI 用量展示格式化工具。
+enum AIUsageFormat {
+    static func accentName(for title: String) -> String {
         let lower = title.lowercased()
         if lower.contains("5h") || lower.contains("session") { return "orange" }
         if lower.contains("week") { return "purple" }
@@ -127,12 +58,12 @@ enum AIUsageProviderFactory {
         return "purple"
     }
 
-    private static func percent(_ value: Double?, suffix: String = "") -> String {
+    static func percent(_ value: Double?, suffix: String = "") -> String {
         guard let value else { return "--\(suffix)" }
         return "\(Int(max(0, min(100, value)).rounded()))%\(suffix)"
     }
 
-    private static func resetText(_ date: Date?) -> String {
+    static func resetText(_ date: Date?) -> String {
         guard let date else { return "reset unknown" }
         let seconds = Int(date.timeIntervalSinceNow)
         guard seconds > 0 else { return "reset passed" }
@@ -148,7 +79,7 @@ enum AIUsageProviderFactory {
         return "resets in \(max(1, minutes))m"
     }
 
-    private static func formatTokens(_ tokens: Int) -> String {
+    static func tokens(_ tokens: Int) -> String {
         guard tokens > 0 else { return "0 tokens" }
         if tokens >= 1_000_000 {
             return String(format: "%.2fM tokens", Double(tokens) / 1_000_000)
@@ -159,7 +90,7 @@ enum AIUsageProviderFactory {
         return "\(tokens) tokens"
     }
 
-    private static func formatCost(_ cost: Double, estimated: Bool) -> String {
+    static func cost(_ cost: Double, estimated: Bool) -> String {
         let prefix = estimated ? "~" : ""
         return "\(prefix)$\(String(format: "%.2f", max(0, cost)))"
     }
