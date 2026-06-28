@@ -18,6 +18,7 @@
 ### Fixed
 - 修复 Provider 启用/禁用与刷新之间的竞态：禁用后被刷新结果重新加回、启用后刷新被在途任务丢弃等问题；启用状态作为唯一真相，刷新回写前以最新状态二次过滤。
 - 修复启用 Provider（如 Claude）后不实时显示、需等待下次刷新的问题：启用时立即用缓存或「Refreshing…」占位卡片显示，再异步拉取真实数据替换。
+- 补全 App 图标：之前 `AppIcon.appiconset` 缺少实际图片导致 Release 版本无图标，现已加入全套尺寸（紫色渐变 + 仪表盘主题）。
 
 ### Changed
 - 重构 AI 用量层：抽出统一的 `UsageProvider` 协议与平级数据模型 `ProviderUsage`，每个 AI Provider 独立实现取数逻辑，对外暴露统一的「额度窗口 + 成本」模型。
