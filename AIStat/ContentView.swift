@@ -58,6 +58,15 @@ struct ContentView: View {
             Text("AIStat")
                 .font(.system(size: 13, weight: .semibold))
             Spacer()
+            Button {
+                page = (page == .settings) ? .codex : .settings
+            } label: {
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(page == .settings ? Color.providerAccent("purple") : .secondary)
+            }
+            .buttonStyle(.plain)
+            .help("Settings")
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
@@ -81,6 +90,8 @@ struct ContentView: View {
             )
         case .battery:
             BatteryDetailView(detail: stats.batteryDetail, batteryPercent: stats.batteryPercent, onBack: { page = .codex })
+        case .settings:
+            SettingsView(onBack: { page = .codex })
         }
     }
 

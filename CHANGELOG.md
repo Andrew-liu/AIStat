@@ -6,10 +6,27 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-28
+
+### Added
+- AI 用量自动刷新：支持 Manual / 1m / 2m / 5m / 15m 刷新间隔，默认 5m。
+- 设置界面：集中管理刷新间隔、Provider 启用开关与开机启动。
+- Provider 启用/禁用：用户可在设置中关闭不使用的 Provider，禁用后不再拉取与展示。
+- 开机启动（Launch at login）：基于 `SMAppService`，开关状态与系统登录项保持同步。
+- 设置持久化：刷新间隔与 Provider 启用状态通过 `UserDefaults` 持久化。
+
+### Fixed
+- 修复 Provider 启用/禁用与刷新之间的竞态：禁用后被刷新结果重新加回、启用后刷新被在途任务丢弃等问题；启用状态作为唯一真相，刷新回写前以最新状态二次过滤。
+- 修复启用 Provider（如 Claude）后不实时显示、需等待下次刷新的问题：启用时立即用缓存或「Refreshing…」占位卡片显示，再异步拉取真实数据替换。
+
 ### Changed
 - 重构 AI 用量层：抽出统一的 `UsageProvider` 协议与平级数据模型 `ProviderUsage`，每个 AI Provider 独立实现取数逻辑，对外暴露统一的「额度窗口 + 成本」模型。
 - 将 Claude 从 `CodexUsageSummary` 中解耦，提升为与 Codex 平级的独立 Provider（`ClaudeProvider`），UI 层无需感知具体 Provider。
 - `CodexUsageReader` 的取数实现拆分为 `CodexProvider` 与 `ClaudeProvider` 两个独立单元，为后续接入更多 Provider（Gemini、Copilot 等）打基础。
+
+### Tests
+- 新增 `AIStatTests` 单元测试 target，覆盖纯逻辑：展示格式化（tokens/cost/percent/resetText/accentName）、刷新间隔映射、定价表选择、Provider 数据模型与额度剩余计算等。
+- 新增一键校验脚本 `scripts/check.sh`，串联「编译 + 单元测试」，每次开发完成后运行以尽早发现问题。
 
 ### Docs
 - 重写 `design.md`：补充设计思路、设计哲学、整体架构、Provider 扩展模型与版本里程碑。
@@ -27,5 +44,6 @@
 - 本地优先设计：成本基于本地 JSONL 日志按模型定价估算，不上传用量数据；默认避免 Claude Keychain 访问。
 - 打包与发布脚本：`scripts/package_dmg.sh`、`scripts/notarize_dmg.sh`。
 
-[Unreleased]: https://github.com/Andrew-liu/AIStat/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Andrew-liu/AIStat/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Andrew-liu/AIStat/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Andrew-liu/AIStat/releases/tag/v1.0.0

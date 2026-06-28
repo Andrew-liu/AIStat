@@ -6,4 +6,5 @@ enum DashboardPage: Equatable {
     case memory
     case disk
     case battery
+    case settings
 }

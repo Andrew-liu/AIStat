@@ -23,3 +23,6 @@ release/*.dmg
 
 # Internal design notes (not for public repo)
 design.md
+
+# Xcode project backups
+*.pbxproj.bak

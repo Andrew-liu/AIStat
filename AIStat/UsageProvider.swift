@@ -36,10 +36,24 @@ protocol UsageProvider: Sendable {
     func cachedUsage() -> ProviderUsage?
 }
 
+/// Provider 的静态展示元信息（与运行时数据无关），用于设置界面等需要列出全部 Provider 的场景。
+struct ProviderDescriptor: Identifiable, Sendable {
+    let id: String
+    let name: String
+    let symbolName: String
+    let accentName: String
+}
+
 /// Provider 注册表：集中声明当前启用的所有 Provider。
 ///
-/// 接入新 Provider 时，只需在这里追加一个实例。
+/// 接入新 Provider 时，只需在这里追加一个实例与对应描述符。
 enum UsageProviderRegistry {
+    /// 所有已注册 Provider 的静态描述（含被禁用的）。
+    static let descriptors: [ProviderDescriptor] = [
+        ProviderDescriptor(id: "codex", name: "Codex", symbolName: "terminal.fill", accentName: "purple"),
+        ProviderDescriptor(id: "claude", name: "Claude", symbolName: "sparkles", accentName: "purple")
+    ]
+
     /// 所有 Provider 共享同一个底层 reader，避免重复的可执行文件探测等开销。
     static func makeProviders(reader: CodexUsageReader) -> [UsageProvider] {
         [
